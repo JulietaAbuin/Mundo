@@ -1,12 +1,11 @@
 class Dios {
 	var creyentes
 	var marias
+
+ method listaCreyentes(_creyentes) {
+		creyentes = _creyentes.filter( { unHumano => unHumano.fe() == self } )}
 	
-	constructor ( listaCreyentes ) {
-		creyentes = listaCreyentes
-	}
-	
-	method pecadores(){ return listaCreyentes }
+	method pecadores(){ return creyentes }
 	
 	method milagro() {
 		marias = creyentes.filter( { unHumano => unHumano.sexo() == "mujer" unHumano.estaEnamorado() } )
@@ -14,18 +13,16 @@ class Dios {
 	}
 }
 
-class Ganesha inherits Dios {
+object ganesha inherits Dios {
 	
-	constructor( listaCreyentes ) = super( listaCreyentes ) {
-	creyentes = listaCreyentes.filter( { unHumano => unHumano.fe() == "Ganesha" } )
-	}
+	
 	
 	override method milagro() {
 		creyentes.forEach( { unHumano => unHumano.reducirEdad( 10 ) } )
 	}
 	
 	method esPadre( unHumano ) {
-		return unHumano.hijos().size() >= 1
+		return unHumano.hijos() >= 1
 	}
 	
 	override method pecadores() {
@@ -37,18 +34,16 @@ class Ganesha inherits Dios {
 	}
 	
 	method noCreyentes() {
-		return listaCreyentes.filter( { unHumano => unHumano.fe() != "Ganesha" } )
+		return creyentes.filter( { unHumano => unHumano.fe() != self} )
 	}
 	
 	method maldad() {
-		self.noCreyentes().forEach( { unHumano => unHumano.CambioDeFe( "Ganesha " ) } )
+		self.noCreyentes().forEach( { unHumano => unHumano.CambioDeFe( self ) } )
 	}
 
 }
 
-class Casstiel inherits Dios {
-
-	constructor( listaCreyentes ) = super( listaCreyentes )
+object casstiel inherits Dios {
 	
 	override method milagro() {
 		creyentes.forEach( { unHumano => unHumano.satisfecho() unHumano.saciado() } )
@@ -60,7 +55,7 @@ class Casstiel inherits Dios {
 	
 	method castigar() {
 		var tortura = new Deporte( 900, 100 )
-		creyentes.pecadores().forEach( { unPecador => unPecador.entrenar( tortura ) } )
+		self.pecadores().forEach( { unPecador => unPecador.entrenar( tortura ) } )
 	}
 	
 	method masJoven() {
@@ -77,18 +72,15 @@ class Casstiel inherits Dios {
 	}
 }
 
-class Zachariah inherits Dios {
+object zachariah inherits Dios {
 	
-	constructor( listaCreyentes ) = super( listaCreyentes ) {
-		creyentes = listaCreyentes.filter( { unHumano => unHumano.fe() == "Zachariah" } )
-	}
 	
 	override method pecadores() {
-		return listaCreyentes.filter( { unHumano => unHumano.fe() == "Casstiel" } )
+		return creyentes.filter( { unHumano => unHumano.fe() == casstiel } )
 	}
 	
 	method esPadre( unHumano ) {
-		return unHumano.hijos().size() >= 1
+		return unHumano.hijos() >= 1
 	}
 	
 	method pecadoresConHijos() {
@@ -99,12 +91,8 @@ class Zachariah inherits Dios {
 		return self.pecadores().filter( { unPecador => ! unPecador.esPadre() } )
 	}
 	
-	method ultimoHijo( unHumano ) {
-		return unHumano.hijos().last()
-	}
-	
     method castigar() {
-		self.pecadoresConHijos().forEach( { unPecador => unPecador.matarHijo( self.ultimoHijo( unPecador ) ) } )
+		self.pecadoresConHijos().forEach( { unPecador => unPecador.matarHijo() } )
 		var neneObeso = new Hombre( 0, 40, 10, "hombre", 0,"neverland", "Zachariah" )
 		self.pecadoresSinHijos().forEach( { unPecador => unPecador.nuevoHijo( neneObeso ) } )
 	}
@@ -207,6 +195,9 @@ class Hombre {
 		return sed == 0
 	}
 	
+	method matarHijo(){
+		hijos.remove( hijos.last() )
+	}
 	method irAlMedico( medico ) {
 		medico.calcularIndice( self )
 	}
