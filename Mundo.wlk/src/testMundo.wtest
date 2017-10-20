@@ -1,0 +1,34 @@
+import Personas.*
+describe "Mundo"{
+	var kala = new Mujer(24,167,58,"mujer",[],"india","ganesha")
+	var rajan = new Humano(25,170,76,"hombre",[],"india","")
+	var hijo = new Mujer(17,164,55,"mujer",[],"india","ganesha")
+	var ganesha = new Ganesha([kala,rajan])
+	var comida = new Comida(400)
+	var snack = new Comida(100)
+	
+test "Kala tiene un hijo" {
+	kala.tenerUnHijo()
+	assert.that(kala.hijos()==1)
+}
+test "Ganesha tiene una sola creyente de india porque rajan no cree en Ganesha"{
+	assert.that(ganesha.creyentesDeNacionalidad("india")==1)
+}
+
+test "Kala realiza actividades y se cansa"{
+	kala.correr(500)
+	kala.comer(comida)
+	assert.notThat(kala.satisfecho())
+	kala.comer(snack)
+	assert.that(kala.satisfecho())
+}
+test "Kala se enamora de Rajan y el de ella"{
+	kala.enamorarse(rajan)
+	assert.that(rajan.estaEnamorado())
+}
+test "Kala es abuela"{
+	kala.nuevoHijo(hijo)
+	hijo.tenerUnHijo()
+	assert.that(kala.esAbuelo())
+}
+}
