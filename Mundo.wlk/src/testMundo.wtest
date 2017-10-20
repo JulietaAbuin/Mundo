@@ -1,0 +1,42 @@
+import Personas.*
+
+describe "Mundo" {
+	var kala = new Mujer( 24, 167, 58, "mujer", [], "india", "Ganesha" )
+	var rajan = new Hombre( 25, 170, 76, "hombre", [], "india", "Zachariah" )
+	var hijo = new Mujer( 17, 164, 55, "mujer", [], "india", "Ganesha" )
+	var hijo1 = new Hombre( 0, 40, 10, "hombre", [], "Peru", "Zachariah" )
+	var hijo2 = new Hombre( 1, 90, 20, "hombre", [], "usa", "Casstiel" )
+	var hijo3 = new Mujer( 10, 120, 30, "mujer", [], "libano", "Ganesha" )
+	var dean = new Mujer( 15, 180, 70, "mujer", [ hijo1, hijo2 ], "usa", "Casstiel" )
+	var sammy = new Hombre( 20, 190, 60, "hombre", [ hijo3 ], "usa", "Casstiel" )
+	var cass = new Casstiel( [ dean, sammy, rajan, hijo, kala, hijo1, hijo2, hijo3 ] )
+	var ganesha = new Ganesha(  [ dean, sammy, rajan, hijo, kala, hijo1, hijo2, hijo3 ] )
+	var zac = new Zachariah(  [ dean, sammy, rajan, hijo, kala, hijo1, hijo2, hijo3 ] )
+	var comida = new Comida( 400 )
+	var snack = new Comida( 100 )
+	
+	test "Kala tiene un hijo" {
+		kala.tenerUnHijo()
+		assert.that( kala.hijos() == 1 )
+	}
+	test "Ganesha tiene una sola creyente de india porque rajan no cree en Ganesha" {
+		assert.that( ganesha.creyentesDeNacionalidad( "india" ) == 2 ) 
+	}
+
+	test "Kala realiza actividades y se cansa" {
+		kala.correr( 500 )
+		kala.comer( comida )
+		assert.notThat( kala.satisfecho() )
+		kala.comer( snack )
+		assert.that( kala.satisfecho() )
+	}
+	test "Kala se enamora de Rajan y el de ella" {
+		kala.enamorarse( rajan )
+		assert.that( rajan.estaEnamorado() )
+	}
+	test "Kala es abuela" {
+		kala.nuevoHijo( hijo )
+		hijo.tenerUnHijo()
+		assert.that( kala.esAbuelo() )
+	}
+}
