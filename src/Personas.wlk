@@ -1,10 +1,12 @@
 class Dios {
 	var creyentes
 	var marias
-	
-	constructor ( listaCreyentes ) {
-		creyentes = listaCreyentes
+
+ 	method listaCreyentes(_creyentes) {
+		creyentes = _creyentes.filter( { unHumano => unHumano.fe() == self } )
 	}
+	
+	method pecadores(){ return creyentes }
 	
 	method milagro() {
 		marias = creyentes.filter( { unHumano => unHumano.sexo() == "mujer" unHumano.estaEnamorado() } )
@@ -12,23 +14,47 @@ class Dios {
 	}
 }
 
-class Casstiel inherits Dios {
-
-	constructor( listaCreyentes ) = super( listaCreyentes ) {
-		creyentes = listaCreyentes
+object ganesha inherits Dios {
+	
+	override method milagro() {
+		creyentes.forEach( { unHumano => unHumano.reducirEdad( 10 ) } )
 	}
+	
+	method esPadre( unHumano ) {
+		return unHumano.hijos() >= 1
+	}
+	
+	override method pecadores() {
+		return creyentes.filter( { unHumano => ! unHumano.esPadre()  and unHumano.estaEnBuenEstado() } )
+	}
+	
+	method creyentesDeNacionalidad( nacionalidad ) {
+		return creyentes.count( { creyente => creyente.nacionalidad() == nacionalidad } )
+	}
+	
+	method noCreyentes() {
+		return creyentes.filter( { unHumano => unHumano.fe() != self} )
+	}
+	
+	method maldad() {
+		self.noCreyentes().forEach( { unHumano => unHumano.CambioDeFe( self ) } )
+	}
+
+}
+
+object casstiel inherits Dios {
 	
 	override method milagro() {
 		creyentes.forEach( { unHumano => unHumano.satisfecho() unHumano.saciado() } )
 	}
 	
-	method pecadores() {
+	override method pecadores() {
 		return creyentes.filter( { unHumano => unHumano.edad() < 18 and unHumano.hijos() >= 1 } )
 	}
 	
 	method castigar() {
 		var tortura = new Deporte( 900, 100 )
-		creyentes.pecadores().forEach( { unPecador => unPecador.entrenar( tortura ) } )
+		self.pecadores().forEach( { unPecador => unPecador.entrenar( tortura ) } )
 	}
 	
 	method masJoven() {
@@ -45,27 +71,60 @@ class Casstiel inherits Dios {
 	}
 }
 
-class Humano {
+object zachariah inherits Dios {
+	
+	
+	override method pecadores() {
+		return creyentes.filter( { unHumano => unHumano.fe() == casstiel } )
+	}
+	
+	method esPadre( unHumano ) {
+		return unHumano.hijos() >= 1
+	}
+	
+	method pecadoresConHijos() {
+		return self.pecadores().filter( { unPecador => unPecador.esPadre() } )
+	}
+	
+	method pecadoresSinHijos() {
+		return self.pecadores().filter( { unPecador => ! unPecador.esPadre() } )
+	}
+	
+    method castigar() {
+		self.pecadoresConHijos().forEach( { unPecador => unPecador.matarHijo() } )
+		var neneObeso = new Hombre( 0, 40, 10, "hombre", 0,"neverland", "Zachariah" )
+		self.pecadoresSinHijos().forEach( { unPecador => unPecador.nuevoHijo( neneObeso ) } )
+	}
+}
+
+class Hombre {
 	var edad
 	var peso
 	var altura
 	var sexo
-	var hijos
-	var sed
-	var hambre
-	var liquidoAcum
-	var comidaAcum
+	var hijos = []
+	var sed = 0
+	var hambre = 0
+	var nacionalidad
+	var fe
+	var liquidoAcum = 0
+	var comidaAcum = 0
 	var cansancio = 0
 	var arrugas = 0
 	var enamorado = false
 	
-	constructor( _edad, _altura, _peso, _sexo, _hijos ) {
+	constructor( _edad, _altura, _peso, _sexo, _hijos,_nacion,_fe ) {
 		edad =_edad
 		altura =_altura
 		peso =_peso
 		sexo = _sexo
 		hijos = _hijos
+		nacionalidad  = _nacion
+		fe=_fe
 	}
+	method fe() { return fe }
+	
+	method nacionalidad() { return nacionalidad }
 	
 	method caminar( kilometros ) {
 		cansancio += kilometros
@@ -73,7 +132,7 @@ class Humano {
 		hambre += kilometros / 2	
 	}
 	
-	method correr( distancia ){
+	method correr(distancia){
 		cansancio += distancia
 		hambre += distancia
 		sed += distancia
@@ -109,28 +168,22 @@ class Humano {
 		sed += deporte.liquidoConsumido()
 	}
 	
-	method enamorarse( persona ) {
-		cansancio += 50
-		persona.enamorarse( self )
+	method enamorarseDe(alguien){
 		enamorado = true
 	}
 	
-	method tenerUnHijo() {
-		if ( peso > 80 ){ 
-			var hijo = new Humano( 0, 40, 4, "mujer", 0 )
-		} else {
-			var hijo = new Humano( 0, 40, 4, "hombre", 0 )
-		}
-		self.nuevoHijo( hijo )
-		
+	method enamorarse( persona ) {
+		cansancio += 50
+		persona.enamorarseDe( self )
+		enamorado = true
 	}
 	
-	method nuevoHijo( hijo ) {
-		hijos.add( hijo )
+	method nuevoHijo(hijo) {
+		hijos.add(hijo)
 	}
 	
 	method hijos() {
-		return hijos
+		return hijos.size()
 	}
 	
 	method satisfecho() {
@@ -141,6 +194,9 @@ class Humano {
 		return sed == 0
 	}
 	
+	method matarHijo(){
+		hijos.remove( hijos.last() )
+	}
 	method irAlMedico( medico ) {
 		medico.calcularIndice( self )
 	}
@@ -148,6 +204,12 @@ class Humano {
 	method cumplirAnios() {
 		edad += 1
 		arrugas += 1
+	}
+	
+	method reducirEdad( cantAnios ) {
+		if( cantAnios > edad )
+			error.throwWithMessage( "No hay comida acumulada" )
+		edad -= cantAnios
 	}
 	
 	method sexo() {
@@ -172,6 +234,26 @@ class Humano {
 	
 	method esAbuelo() {
 		return hijos.any( { unHijo => unHijo.hijos() >= 1 } )
+	}
+	
+	method CambioDeFe( unaFe ) {
+		fe = unaFe
+	}
+}
+
+class Mujer inherits Hombre {
+	var variable = 1
+	constructor( _edad, _altura, _peso, _sexo, _hijos,_nacionalidad, _fe ) = super( _edad, _altura, _peso, _sexo, _hijos,_nacionalidad, _fe )
+	
+	method tenerUnHijo() {
+		if ( variable == 1 ){ 
+			var hijo = new Hombre( 0, 40, 4, "mujer", 0,nacionalidad, fe )
+			variable = 0
+		} else {
+			var hijo = new Hombre( 0, 40, 4, "hombre", 0,nacionalidad, fe )
+			variable = 1
+		}
+		self.nuevoHijo( hijo )	
 	}
 }
 
